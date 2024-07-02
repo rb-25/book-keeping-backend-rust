@@ -1,0 +1,36 @@
+version: '2.28.1'
+
+services:
+  postgres:
+    image: postgres
+    container_name: bookeeping-postgres
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    networks:
+      - bookeeping-network
+  
+  bookeeping-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bookeeping-api
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/usr/src/bookeeping/
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    networks:
+      - bookeeping-network
+      
+volumes:
+  postgres-db:
+
+networks:
+  bookeeping-network:
