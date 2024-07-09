@@ -1,12 +1,18 @@
 #[macro_use] extern crate rocket;
 
-#[get("/")]
-fn index() -> & 'static str {
-    "Hello, world!"
-}
+mod models;
+mod routes;
+mod utils;
 
-#[launch]
-fn rocket() -> _{
+use rocket::Rocket;
+use rocket_contrib::databases::diesel;
+
+#[database("my_app")]
+pub struct Db(diesel::PgConnection);
+
+fn main() {
     rocket::build()
-    .mount("/", routes![index])
+       .attach(Db::fairing())
+       .mount("/", routes![routes::users::index])
+       .launch();
 }
